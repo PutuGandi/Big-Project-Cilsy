@@ -1,0 +1,132 @@
+---
+
+#- name: Install packages and dependencies
+#  apt: name=openjdk-8-jdk update_cache=yes state=present
+#  become: true
+
+- name: Install packages and dependencies
+  apt: name={{ item }} update_cache={{ update_apt_cache }} state=present
+  with_items:
+    - openjdk-8-jdk  # this specific version is needed for Jenkins to run
+    - libfontconfig
+    - libffi-dev
+    - libncurses5-dev
+  become: true
+
+- name: Add the Jenkins public GPG key to the apt repo
+  apt_key: 
+    url: https://pkg.jenkins.io/debian/jenkins.io.key
+#    url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
+    state: present
+  become: true
+
+#- name: Add the Jenkins public GPG key to the apt repo
+#  shell: sudo apt update
+#  become: true
+
+- name: Add Jenkins apt repo to the trusted sources list
+  apt_repository: repo='deb http://pkg.jenkins.io/debian-stable binary/' 
+                  state=present
+  become: true
+  
+
+- name: Install Jenkins server
+  apt: name=jenkins state=present
+  become: true
+
+- name: install git
+  apt: name=git state=present
+  become: true
+
+- name: read admin pwd
+  shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+  register: adminpwd
+  become: true
+
+- name: unlock and add admin user
+  jenkins_script:
+    script: |
+      import jenkins.model.*
+      import hudson.security.*
+      def instance = Jenkins.getInstance()
+      def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+      hudsonRealm.createAccount('jenkins', '${user_pwd}')
+      instance.setSecurityRealm(hudsonRealm)
+      def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+      strategy.setAllowAnonymousRead(false)
+      instance.setAuthorizationStrategy(strategy)
+      instance.save()
+    args:
+      user_pwd: "{{ admin_user_pass }}"
+    user: admin
+    password: "{{ adminpwd.stdout }}"
+  become: true
+- name: complete setup wizard
+  jenkins_script:
+   script: |
+    import static jenkins.model.Jenkins.instance as jenkins
+    import jenkins.install.InstallState
+    if (!jenkins.installState.isSetupComplete()) {
+      InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+    }
+   user: admin
+   password: "{{ adminpwd.stdout }}"
+
+#- name: instal Jenkins-CLI
+#  get_url:
+#    url: http://3.0.93.83:8080/jnlpJars/jenkins-cli.jar
+#    dest: .
+
+#- name: Install Jenkins Plugins
+#  command:
+#    java -jar ./jenkins-cli.jar -s http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth install-plugin https://plugins.jenkins.io/cloudbees-folder -restart
+#    java -jar ./jenkins-cli.jar -s "http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth list-plugins
+
+- name: install plugin
+  jenkins_plugin:
+   name: "{{ item }}"
+   state: latest
+   url_username: admin
+   url_password: "{{ adminpwd.stdout }}"
+  with_items: "{{ jenkins_plugins }}"
+
+#- name: Install Plugins
+#  command:
+#    java -jar ./jenkins-cli.jar -s http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth install-plugin https://plugins.jenkins.io/cloudbees-folder -restart
+#    java -jar ./jenkins-cli.jar -s "http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth list-plugins
+
+- name: Restart Jenkins to make the plugin data available
+  service: name=jenkins state=restarted
+  become: true
+
+#- name: Install Jenkins plugins
+#  command:
+#    java -jar jenkins-cli.jar -s http://54.254.101.145:8080/ install-plugin https://plugins.jenkins.io/cloudbees-folder/ -restart
+#    creates=/var/lib/jenkins/plugins/{{ item }}.jpi
+#  with_items: {{jenkins_plugins}}
+
+
+
+#  jenkins_script:
+#    script: |
+#      import jenkins.model.* 
+#
+#      def installed = false 
+#      def plugins = ['script-security', 'command-launcher']
+#      
+#      def instance =Jenkins.getInstance() 
+#      def pm = instance.getPluginManager() 
+#      def uc = instance.getUpdateCenter() 
+#      uc.updateAllSites()
+#      
+#      plugins.each {
+#        if(!pm.getPlugin(it)) {
+#          def plugin = uc.getPlugin(it)
+#          if (plugin) {
+#            plugin.deploy()
+#            installed = true
+#          }
+#        }
+#      }
+#    user: admin
+#    password: "{{ adminpwd.stdout }}"

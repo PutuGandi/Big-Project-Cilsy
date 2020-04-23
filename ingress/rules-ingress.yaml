@@ -1,0 +1,73 @@
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+#  name: p-ingress
+#  namespace: production
+#  annotations:
+#    ## Untuk menaikan batas upload file
+#    nginx.org/client-max-body-size: "10m"
+#    ## Memaksa jalan di https
+#    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#spec:
+#  rules:
+#
+### Service Location n Characters
+#  - host: p-pesbuk.gandi.my.id
+#    http:
+#      paths:
+#      - path: /
+#        backend:
+#          serviceName: p-pesbuk-service
+#          servicePort: 80
+#  - host: p-landing-page.gandi.my.id
+#    http:
+#      paths:
+#      - path: /
+#        backend:
+#          serviceName: p-landing-page-service
+#          servicePort: 80
+#  - host: p-wordpress.gandi.my.id
+#    http:
+#      paths:
+#      - path: /
+#        backend:
+#          serviceName: p-wordpress-service
+#          servicePort: 80
+#
+#
+#---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: s-ingress
+  namespace: staging
+  annotations:
+    ## Untuk menaikan batas upload file
+    nginx.org/client-max-body-size: "10m"
+    ## Memaksa jalan di https
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+
+## Service Location n Characters
+  - host: s-pesbuk.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: s-pesbuk-service
+          servicePort: 80
+  - host: s-landing-page.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: s-landing-page-service
+          servicePort: 80
+  - host: s-wordpress.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: s-wordpress-service
+          servicePort: 80
