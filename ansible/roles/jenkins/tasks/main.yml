@@ -5,23 +5,27 @@
 #  become: true
 
 - name: Install packages and dependencies
-  apt: name={{ item }} update_cache={{ update_apt_cache }} state=present
+  apt: name={{ item }} update_cache=yes state=present
   with_items:
     - openjdk-8-jdk  # this specific version is needed for Jenkins to run
-    - libfontconfig
-    - libffi-dev
-    - libncurses5-dev
+#    - libfontconfig
+#    - libffi-dev
+#    - libncurses5-dev
   become: true
 
 - name: Add the Jenkins public GPG key to the apt repo
   apt_key: 
-    url: https://pkg.jenkins.io/debian/jenkins.io.key
-#    url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
+#    url: https://pkg.jenkins.io/debian/jenkins.io.key
+    url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
     state: present
   become: true
 
 #- name: Add the Jenkins public GPG key to the apt repo
 #  shell: sudo apt update
+#  become: true
+
+#- name: Add Jenkins apt repo to the sources list
+#  shell: sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
 #  become: true
 
 - name: Add Jenkins apt repo to the trusted sources list
