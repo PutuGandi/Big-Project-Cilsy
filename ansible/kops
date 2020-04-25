@@ -1,0 +1,2 @@
+[kops]
+3.0.52.38 ansible_connection=ssh ansible_ssh_private_key_file=~/.ssh/id_rsa.pub ansible_ssh_user=ubuntu

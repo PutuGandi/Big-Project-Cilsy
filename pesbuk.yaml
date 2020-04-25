@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: secret
+    namespace: staging
+type: Opaque
+data:
+    DB_USER: YmlncHJvamVjdA==
+    DB_PASS: MDk4NzY1NDMyMQ==
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s-pesbuk-configmap
+  namespace: staging
+data:
+  config.php: |
+    <?php
+    $db_host = getenv("DB_HOST");
+    $db_user = getenv("DB_USER");
+    $db_pass = getenv("DB_PASS");
+    $db_name = "bigproject";
+    try {   
+    //create PDO connection
+    $db = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
+    } catch(PDOException $e) {
+    //show error
+    die("Terjadi masalah: " . $e->getMessage());
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pesbuk-deployment
+  labels:
+    app: pesbuk
+spec:
+  selector:
+    matchLabels:
+      app: pesbuk
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: pesbuk
+    spec:
+      containers:
+      - name: pesbuk
+        image: gandi12/pesbuk:latest
+#        image: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME_PB:${BUILD_NUMBER
+        ports:
+        - containerPort: 80
+        env:  
+            - name: DB_HOST    
+              value: bigproject.cbbkbjoitxuc.ap-southeast-1.rds.amazonaws.com
+            - name: DB_USER    
+              valueFrom:       
+                secretKeyRef:
+                  name: secret
+                  key: DB_USER  
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: DB_PASS
+        volumeMounts:
+          - name: config-fb
+            mountPath: "/var/www/html/config.php"
+            subPath: "config.php"
+      volumes:
+        - configMap:
+            name: s-pesbuk-configmap
+          name: config-fb
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s-pesbuk-service
+  namespace: staging
+  labels:
+    app: pesbuk
+    env: staging
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: s-pesbuk
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  annotations:
+    ## Untuk menaikan batas upload file
+    nginx.org/client-max-body-size: "10m"
+    ## Memaksa jalan di https
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+
+## Service Location n Characters
+  - host: pesbuk.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: s-pesbuk-service
+          servicePort: 80
