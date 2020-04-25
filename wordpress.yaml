@@ -123,7 +123,7 @@ spec:
   rules:
 
 ## Service Location n Characters
-  - host: wordpress.gandi.my.id
+  - host: wordpress.gandi-sp2.my.id
     http:
       paths:
       - path: /
