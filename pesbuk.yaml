@@ -103,7 +103,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: s-ingress
+  name: pesbuk-ingress
   namespace: staging
   annotations:
     ## Untuk menaikan batas upload file
