@@ -45,6 +45,7 @@ spec:
     app: landing-page
 
 ---
+
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:

@@ -15,6 +15,7 @@ data:
     DB_PASS: MDk4NzY1NDMyMQ==
 
 ---
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
