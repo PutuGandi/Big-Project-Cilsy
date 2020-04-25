@@ -55,7 +55,7 @@ spec:
       containers:
       - name: pesbuk
 #        image: gandi12/pesbuk:latest
-        image: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$BUILD_NUMBER
+        image: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME_PB:$BUILD_NUMBER
         ports:
         - containerPort: 80
         env:  

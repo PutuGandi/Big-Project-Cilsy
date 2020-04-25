@@ -1,8 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: landing-page-deployment
+  namespace: staging
   labels:
     app: landing-page
 spec:
@@ -17,8 +23,8 @@ spec:
     spec:
       containers:
       - name: landing-page
-        image: gandi12/landing-page:latest
-#        image: gandi12/JK-LandingPage_LP:$BUILD_NUMBER
+#        image: gandi12/landing-page:latest
+        image: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME_LP:$BUILD_NUMBER
         ports:
         - containerPort: 80
 
@@ -27,6 +33,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: landing-page-service
+  namespace: staging
   labels:
     app: landing-page
 spec:
