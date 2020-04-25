@@ -1,1 +1,111 @@
-Name
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: secret
+    namespace: staging
+type: Opaque
+data:
+    DB_USER: YmlncHJvamVjdA==
+    DB_PASS: MDk4NzY1NDMyMQ==
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s-wordpress-configmap
+  namespace: staging
+data:
+  wp-config.php: |
+    <?php
+    define('DB_NAME', 'bigproject');
+    define('DB_USER', getenv("DB_USER"));
+    define('DB_PASSWORD', getenv("DB_PASS"));
+    define('DB_HOST', 'bigproject.cbbkbjoitxuc.ap-southeast-1.rds.amazonaws.com');
+    define('DB_CHARSET', 'utf8');
+    define('DB_COLLATE', '');
+    define('AUTH_KEY',         'EVTw2$PD2/M^(3|pk!I?^SRw2jkblLzHQuLQ1]3+<CE.uQN+$O$DVx&cHL;rDD+|');
+    define('SECURE_AUTH_KEY',  'oa:,abdP3F*+t?v(3f)v!U-,5HUpM`$-pY>VG[zP+}n2fZ|h6va,eZX}7~{5Ic(~');
+    define('LOGGED_IN_KEY',    '|AkASyGb-5s&ld%nx]:*Mj~W/3sGnB0m&{46*h%)Da6<[@3c&08t#Wq{iXNQfDMF');
+    define('NONCE_KEY',        'nBDJx6K~xh(h8@DaW``KGj<RlX%4|-d/.:M:T|!Qu{{Cd|<iG,M^>H[+L9(d(41s');
+    define('AUTH_SALT',        '^c6 $C+jjW-KSM6FTOA$[:_++IauD1 6J?h4f#|a[W2guz2?o/e pW]~O=MD{JRh');
+    define('SECURE_AUTH_SALT', 'is 4(eUh/JF#,{%Ex8>qB9jek*H1h+R6OEoojoJYztA++Q1{Y6>,ruh]Z/4p|Kx,');
+    define('LOGGED_IN_SALT',   'Wu%a-D_3BdLQ9v.&MoBITSb8)OaxK)s?u6=+:n:z6B_+HZ6|-fo%<jXjM1kOa^;^');
+    define('NONCE_SALT',       'q`9]&o0D[/^j2fEw+sO!#%!:?nR=q}wj/X{K>I&5M84RaTsu+E)QWO*X>Op.W+uc');
+    $table_prefix  = 'wpcoba_';
+    
+    define('WP_DEBUG', false);
+   
+    if ( !defined('ABSPATH') )
+        define('ABSPATH', dirname(__FILE__) . '/');
+    require_once(ABSPATH . 'wp-settings.php');
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-deployment
+  namespace: staging
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - name: wordpress
+        image: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME_WP:$BUILD_NUMBER
+#        image: gandi12/wordpress:6
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-service
+  namespace: staging
+  labels:
+    app: wordpress
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: wordpress
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: staging
+  annotations:
+    ## Untuk menaikan batas upload file
+    nginx.org/client-max-body-size: "10m"
+    ## Memaksa jalan di https
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+
+## Service Location n Characters
+  - host: wordpress.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wordpress-service
+          servicePort: 80
