@@ -1,4 +1,10 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+
+---
+apiVersion: v1
 kind: Secret
 metadata:
     name: secret
@@ -33,6 +39,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pesbuk-deployment
+  namespace: staging
   labels:
     app: pesbuk
 spec:
