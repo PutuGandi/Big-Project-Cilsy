@@ -29,7 +29,7 @@ define('DB_USER', 'devopscilsy');
 define('DB_PASSWORD', '1234567890');
 
 /** MySQL hostname */
-define('DB_HOST', 'devopscilsy.cbbkbjoitxuc.ap-southeast-1.rds.amazonaws.com');
+define('DB_HOST', 'bigproject.cbbkbjoitxuc.ap-southeast-1.rds.amazonaws.com');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
