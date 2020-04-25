@@ -18,7 +18,7 @@ spec:
       containers:
       - name: landing-page
         image: gandi12/landing-page:latest
-#        image: gandi12/JK-LandingPage:$BUILD_NUMBER
+#        image: gandi12/JK-LandingPage_LP:$BUILD_NUMBER
         ports:
         - containerPort: 80
 

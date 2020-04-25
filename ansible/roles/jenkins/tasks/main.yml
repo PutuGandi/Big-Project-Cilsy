@@ -42,39 +42,39 @@
   apt: name=git state=present
   become: true
 
-- name: read admin pwd
-  shell: cat /var/lib/jenkins/secrets/initialAdminPassword
-  register: adminpwd
-  become: true
-
-- name: unlock and add admin user
-  jenkins_script:
-    script: |
-      import jenkins.model.*
-      import hudson.security.*
-      def instance = Jenkins.getInstance()
-      def hudsonRealm = new HudsonPrivateSecurityRealm(false)
-      hudsonRealm.createAccount('jenkins', '${user_pwd}')
-      instance.setSecurityRealm(hudsonRealm)
-      def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-      strategy.setAllowAnonymousRead(false)
-      instance.setAuthorizationStrategy(strategy)
-      instance.save()
-    args:
-      user_pwd: "{{ admin_user_pass }}"
-    user: admin
-    password: "{{ adminpwd.stdout }}"
-  become: true
-- name: complete setup wizard
-  jenkins_script:
-   script: |
-    import static jenkins.model.Jenkins.instance as jenkins
-    import jenkins.install.InstallState
-    if (!jenkins.installState.isSetupComplete()) {
-      InstallState.INITIAL_SETUP_COMPLETED.initializeState()
-    }
-   user: admin
-   password: "{{ adminpwd.stdout }}"
+#- name: read admin pwd
+#  shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+#  register: adminpwd
+#  become: true
+#
+#- name: unlock and add admin user
+#  jenkins_script:
+#    script: |
+#      import jenkins.model.*
+#      import hudson.security.*
+#      def instance = Jenkins.getInstance()
+#      def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+#      hudsonRealm.createAccount('jenkins', '${user_pwd}')
+#      instance.setSecurityRealm(hudsonRealm)
+#      def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+#      strategy.setAllowAnonymousRead(false)
+#      instance.setAuthorizationStrategy(strategy)
+#      instance.save()
+#    args:
+#      user_pwd: "{{ admin_user_pass }}"
+#    user: admin
+#    password: "{{ adminpwd.stdout }}"
+#  become: true
+#- name: complete setup wizard
+#  jenkins_script:
+#   script: |
+#    import static jenkins.model.Jenkins.instance as jenkins
+#    import jenkins.install.InstallState
+#    if (!jenkins.installState.isSetupComplete()) {
+#      InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+#    }
+#   user: admin
+#   password: "{{ adminpwd.stdout }}"
 
 #- name: instal Jenkins-CLI
 #  get_url:
@@ -86,22 +86,22 @@
 #    java -jar ./jenkins-cli.jar -s http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth install-plugin https://plugins.jenkins.io/cloudbees-folder -restart
 #    java -jar ./jenkins-cli.jar -s "http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth list-plugins
 
-- name: install plugin
-  jenkins_plugin:
-   name: "{{ item }}"
-   state: latest
-   url_username: admin
-   url_password: "{{ adminpwd.stdout }}"
-  with_items: "{{ jenkins_plugins }}"
+#- name: install plugin
+#  jenkins_plugin:
+#   name: "{{ item }}"
+#   state: latest
+#   url_username: admin
+#   url_password: "{{ adminpwd.stdout }}"
+#  with_items: "{{ jenkins_plugins }}"
 
 #- name: Install Plugins
 #  command:
 #    java -jar ./jenkins-cli.jar -s http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth install-plugin https://plugins.jenkins.io/cloudbees-folder -restart
 #    java -jar ./jenkins-cli.jar -s "http://3.0.93.83:8080" -auth jenkins:jenkins -noKeyAuth list-plugins
 
-- name: Restart Jenkins to make the plugin data available
-  service: name=jenkins state=restarted
-  become: true
+#- name: Restart Jenkins to make the plugin data available
+#  service: name=jenkins state=restarted
+#  become: true
 
 #- name: Install Jenkins plugins
 #  command:
