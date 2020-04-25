@@ -342,3 +342,41 @@ spec:
       port: 443
       protocol: TCP
       targetPort: http
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: s-ingress
+  namespace: staging
+  annotations:
+    ## Untuk menaikan batas upload file
+    nginx.org/client-max-body-size: "10m"
+    ## Memaksa jalan di https
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+
+## Service Location n Characters
+  - host: pesbuk.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pesbuk-service
+          servicePort: 80
+  - host: landing-page.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: landing-page-service
+          servicePort: 80
+  - host: wordpress.gandi.my.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wordpress-service
+          servicePort: 80
