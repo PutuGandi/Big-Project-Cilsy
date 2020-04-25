@@ -18,7 +18,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: s-wordpress-configmap
+  name: wordpress-configmap
   namespace: staging
 data:
   wp-config.php: |
@@ -26,7 +26,7 @@ data:
     define('DB_NAME', 'bigproject');
     define('DB_USER', getenv("DB_USER"));
     define('DB_PASSWORD', getenv("DB_PASS"));
-    define('DB_HOST', 'bigproject.cbbkbjoitxuc.ap-southeast-1.rds.amazonaws.com');
+    define('DB_HOST', getenv("DB_HOST"));
     define('DB_CHARSET', 'utf8');
     define('DB_COLLATE', '');
     define('AUTH_KEY',         'EVTw2$PD2/M^(3|pk!I?^SRw2jkblLzHQuLQ1]3+<CE.uQN+$O$DVx&cHL;rDD+|');
@@ -69,6 +69,27 @@ spec:
 #        image: gandi12/wordpress:6
         ports:
         - containerPort: 80
+        env:  
+            - name: DB_HOST    
+              value: bigproject.cbbkbjoitxuc.ap-southeast-1.rds.amazonaws.com
+            - name: DB_USER    
+              valueFrom:       
+                secretKeyRef:
+                  name: secret
+                  key: DB_USER  
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: DB_PASS
+        volumeMounts:
+          - name: config-wordpress
+            mountPath: "/var/www/html/wp-config.php"
+            subPath: "wp-config.php"
+      volumes:
+        - configMap:
+            name: wordpress-configmap
+          name: config-wordpress
 
 ---
 apiVersion: v1
