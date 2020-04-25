@@ -84,7 +84,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: s-pesbuk-service
+  name: pesbuk-service
   namespace: staging
   labels:
     app: pesbuk
@@ -95,7 +95,7 @@ spec:
   - port: 80
     protocol: TCP
   selector:
-    app: s-pesbuk
+    app: pesbuk
 
 ---
 apiVersion: extensions/v1beta1
@@ -116,5 +116,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: s-pesbuk-service
+          serviceName: pesbuk-service
           servicePort: 80
