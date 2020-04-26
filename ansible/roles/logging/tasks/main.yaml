@@ -1,0 +1,88 @@
+- name: Copy EFK Namespaces
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/efk-ns.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Elasticsearch Service
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/elasticsearch-svc.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Storageclass
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/StorageClass.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Elasticseacrh Statefulset
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/elasticsearch-statefulset.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Kibana Deployment dan Kibana Service 
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/kibana-dpy.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy EFK Ingress
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/efk-ingress.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Fluentd Daemonset
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/logging-monitoring/fluentd-dpy.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Apply Namespaces
+  shell: kubectl apply -f /home/ubuntu/efk-ns.yaml
+  ignore_errors: yes
+
+- name: Apply Elasticsearch Service
+  shell: kubectl apply -f elasticsearch-svc.yaml
+  ignore_errors: yes
+
+- name: Apply Storageclass
+  command: kubectl apply -f StorageClass.yaml
+
+- name: Apply Elasticsearch Statefulset
+  command: kubectl apply -f elasticsearch-statefulset.yaml
+
+- name: Monitoring Statefulset
+  command: kubectl rollout status sts/es-cluster -n kube-logging
+
+- name: Apply Kibana Deployment dan Service
+  command: kubectl apply -f kibana-dpy.yaml
+
+- name: Apply EFK Ingress
+  command: kubectl apply -f efk-ingress.yaml
+
+- name: Apply Fluents Daemonset
+  command: kubectl apply -f fluentd-dpy.yaml

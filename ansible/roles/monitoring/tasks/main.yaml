@@ -1,0 +1,181 @@
+- name: Copy Grafana Datasource Configmap
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/grafana-datasource-configmap.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Grafana Deployment
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/grafana-dpy.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Grafana Ingress
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/grafana-ingress.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Grafana Service
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/grafana-svc.yaml 
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Kube-Metrics Deployment
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/metrics-dpy.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Kube-Metrics RBAC
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/metrics-rbac.yaml 
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Kube-Metrics Service Account
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/metrics-sa.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Kube-Metrics Service
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/metrics-svc.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Namespace
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/monitoring-ns.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy PVC Promotheus
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/monitoring-pvc.yaml 
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Promotheus Configmap
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/prometheus-configmap.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Promotheus Cluster Role
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/prometheus-cr.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Promotheus Deployment
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/prometheus-deployment.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Copy Promotheus Services
+  copy:
+    src: /home/workspcae/Big-Project-Cilsy/monitoring-system/prometheus-service.yaml
+    dest: /home/ubuntu/.
+    owner: ubuntu
+    group: ubuntu
+    mode: 0664
+  become: true
+
+- name: Apply Namespaces
+  shell: kubectl apply -f monitoring-ns.yaml
+  ignore_errors: yes
+
+- name: Apply PVC Promotheus
+  shell: kubectl apply -f monitoring-pvc.yaml
+  ignore_errors: yes
+
+- name: Apply Promotheus Cluster Role
+  shell: kubectl apply -f prometheus-cr.yaml
+  ignore_errors: yes
+
+- name: Apply Promotheus Configmap
+  shell: kubectl apply -f prometheus-configmap.yaml
+  ignore_errors: yes
+
+- name: Apply Promotheus Deployment
+  shell: kubectl apply -f prometheus-deployment.yaml
+  ignore_errors: yes
+
+- name: Apply Promotheus Services
+  shell: kubectl apply -f prometheus-service.yaml
+  ignore_errors: yes
+
+- name: Apply Kube-Metrics Service Account
+  shell: kubectl apply -f metrics-sa.yaml
+  ignore_errors: yes
+
+- name: Apply Kube-Metrics rbac
+  shell: kubectl apply -f metrics-rbac.yaml
+  ignore_errors: yes
+
+- name: Apply Kube-Metrics deployment
+  shell: kubectl apply -f metrics-dpy.yaml
+  ignore_errors: yes
+
+- name: Apply Kube-Metrics Service
+  shell: kubectl apply -f metrics-svc.yaml
+  ignore_errors: yes
+
+- name: Apply Grafana Datasource Configmap
+  shell: kubectl apply -f grafana-datasource-configmap.yaml
+  ignore_errors: yes
+
+- name: Apply Grafana Deployment
+  shell: kubectl apply -f grafana-dpy.yaml
+  ignore_errors: yes
+
+- name: Apply Grafana Services
+  shell: kubectl apply -f grafana-svc.yaml
+  ignore_errors: yes
+
+- name: Apply Grafana Ingress
+  shell: kubectl apply -f grafana-ingress.yaml
+  ignore_errors: yes
