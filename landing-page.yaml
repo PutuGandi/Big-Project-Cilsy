@@ -59,7 +59,7 @@ spec:
   rules:
 
 ## Service Location n Characters
-  - host: landing-page.gandi.my.id
+  - host: prod-landing-page.gandi.my.id
     http:
       paths:
       - path: /

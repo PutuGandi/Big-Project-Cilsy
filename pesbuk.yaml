@@ -114,7 +114,7 @@ spec:
   rules:
 
 ## Service Location n Characters
-  - host: pesbuk.gandi.my.id
+  - host: prod-pesbuk.gandi.my.id
     http:
       paths:
       - path: /
